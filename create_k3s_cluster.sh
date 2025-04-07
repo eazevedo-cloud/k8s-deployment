@@ -32,6 +32,7 @@ show_help() {
   exit 0
 }
 
+
 # Function to create cluster
 create_cluster() {
   echo "Creating Kind cluster '${CLUSTER_NAME}' with 1 control-plane and $NUM_WORKERS workers..."
@@ -43,6 +44,7 @@ create_cluster() {
   else
     echo "Docker network '${NETWORK_NAME}' already exists."
   fi
+
 
   # Generate Kind configuration file
   cat <<EOF > "$CONFIG_FILE"
@@ -69,6 +71,7 @@ EOF
 
   echo "Waiting for cluster to initialize..."
   sleep 30
+
 
   # Verify cluster status with retry
   echo "Verifying cluster status..."
@@ -125,11 +128,11 @@ install_addon() {
   case $addon_name in
     minio)
       echo "Installing MinIO..."
-      kubectl apply -f https://raw.githubusercontent.com/minio/operator/master/minio-operator.yaml
+      kubectl apply -k "github.com/minio/operator?ref=v7.0.1"
       ;;
     metallb)
       echo "Installing MetalLB..."
-      kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/main/manifests/metallb.yaml
+      kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml
       cat <<EOF | kubectl apply -f -
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
